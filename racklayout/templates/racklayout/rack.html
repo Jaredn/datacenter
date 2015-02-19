@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block title %}Dacenter{% endblock %}
+{% block content %}
+
+<div class="col-md-12">
+    <div class="panel panel-primary">
+        <div class="panel-heading clearfix">
+            <h3 class="panel-title pull-left">Rack:
+                {% if rack %}
+                    {{ rack.label }}
+                {% else %}
+                    Errror: Rack not found
+                {% endif %}
+            </h3>
+        </div>
+
+        <div class='row'>
+            {% if assets %}
+                <div class="col-md-1">
+                {% for i in height %}
+                 <div class="row">
+                    <H3>{{ i }}</H3>
+                </div>
+                {% endfor %}
+                </div>
+                <div class="col-md-6">
+                {% for asset in assets %}
+                <div class="row">
+                    {{ asset.label }}
+                </div>
+                {%  endfor %}
+                </div>
+            {% else %}
+            <H2><a href="#">Click here to add Assets to this Rack</a> </H2>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

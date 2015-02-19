@@ -1,0 +1,99 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>{% block title %}Network Tools{% endblock %}</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'dist/css/bootstrapValidator.min.css' %}" rel="stylesheet">
+
+    <!-- Rickshaw CSS -->
+    <link href="{% static 'dist/css/rickshaw.css' %}" rel="stylesheet">
+    
+	<link href="{% static 'dist/css/fixbootstrap.css' %}" rel="stylesheet">
+    
+    <!-- Custom styles for this template -->
+    <link href="{% static 'dist/custom/starter-template.css' %}" rel="stylesheet">
+    <script type='text/javascript' src="{% static 'jquery-2.1.1.js' %}"></script>
+    <script type='text/javascript' src="{% static 'jquery.dataTables.min.js' %}"></script>
+    <script type='text/javascript' src="{% static 'tablesorter/jquery.tablesorter.min.js' %}"></script>
+    <script type='text/javascript' src="{% static 'jquery-ui.min.js' %}"></script>
+    <!-- <script type='text/javascript' src="{% static 'modal.js' %}"></script> -->
+    <script type='text/javascript' src="{% static 'dist/js/bootstrap.min.js' %}"></script>
+    <script type='text/javascript' src="{% static 'dist/js/bootstrapValidator.min.js' %}"></script>
+    <!-- Rickshaw JS -->
+    <script type='text/javascript' src="{% static 'd3.v3.min.js' %}"></script>
+    <script type='text/javascript' src="{% static 'rickshaw.min.js' %}"></script>
+    <script type='text/javascript' src="{% static 'rickshaw.extensions.js' %}"></script>
+
+    
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="{% url 'racklayout:index' %}">Foundation</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="{% url 'racklayout:index' %}">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">App <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="{% url 'racklayout:index' %}">IPAM</a></li>
+                <li><a href="{% url 'racklayout:index' %}">Event Viewer</a></li>
+                <li><a href="{% url 'racklayout:index' %}">Config Push Manager</a></li>
+                <li><a href="{% url 'racklayout:index' %}">Config Show Manager</a></li>
+                <li><a href="{% url 'racklayout:index' %}">Check Conn Manager</a></li>
+              </ul>
+            </li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="../navbar/">Default</a></li>
+            <li><a href="../navbar-static-top/">Static top</a></li>
+            <li class="active"><a href="{% url 'racklayout:index' %}">Log Out</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+	
+    <div class="container-fluid" style="padding-top:5px;">
+
+	{% block content %}{% endblock %}
+     
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+{% block modal %}{% endblock %}
+</html>
