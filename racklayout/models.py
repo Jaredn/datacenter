@@ -1,9 +1,12 @@
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.core.validators import RegexValidator
 #### non django imports
 
 
 # Create your models here.
+from model_utils import Choices
 
 
 class BaseModel(models.Model):
@@ -58,23 +61,16 @@ class Dc(BaseModel):
         must be unique
         must be a three capital letter code followed by a number
     """
-    label = models.CharField(max_length=4,
-                             unique=True,
-                             validators=[
-                                 RegexValidator(
-                                     regex='^[A-Z]{3}\d+',
-                                     message='DC must be 3 capital letters followed by a number',
-                                     code='invalid_dc'
-                                 )
-                             ]
-                             )
-    metroid = models.ForeignKey(Metro)
+    number = models.IntegerField()
+    metro = models.ForeignKey(Metro)
 
     class Meta:
-        ordering = ('label',)
+        ordering = ('metro__label','number')
+        # migration tool will insert a constraint in DB
+        unique_together = ('number', 'metro')
 
     def __unicode__(self):
-        return '%s' % self.label
+        return '%s%d' % (self.metro.label, self.number)
 
 
 class Row(BaseModel):
@@ -83,7 +79,7 @@ class Row(BaseModel):
     :param
         label: (str) exmaple F or 10
     """
-    dcid = models.ForeignKey(Dc)
+    dc = models.ForeignKey(Dc)
     label = models.CharField(max_length=3,
                              unique=False,
                              validators=[
@@ -122,31 +118,15 @@ class Rack(BaseModel):
                                  )
                              ]
                              )
-    rowid = models.ForeignKey(Row)
+    row = models.ForeignKey(Row)
     totalunits = models.IntegerField(default=48)
 
 
     class Meta:
-        ordering = ('rowid',)
+        ordering = ('row',)
 
     def __unicode__(self):
         return '%s' % self.label
-
-class Unit(BaseModel):
-    rackid = models.ForeignKey(Rack)
-    unit = models.IntegerField()
-    front = models.BooleanField(default=False)
-    back = models.BooleanField(default=False)
-
-    class Meta:
-        ordering = ('unit',)
-
-    def __unicode__(self):
-        return '%s, %s' % (self.rackid, self.unit)
-
-class PatchPanel(Unit):
-    label = models.CharField(max_length=64)
-
 
 class Asset(BaseModel):
     """
@@ -165,21 +145,74 @@ class Asset(BaseModel):
         back: (boolean): determines if the asset is in the back of the rack
         power: (int) not sure how to calculate this
     """
-    #todo add support for power calc per cabinet
-    rackid = models.ForeignKey(Rack)
-    label = models.CharField(max_length=64)
-    rackunit = models.IntegerField()
-    unitsize = models.IntegerField()
-    front = models.BooleanField(default=False)
-    back = models.BooleanField(default=False)
-    panel = models.BooleanField(default=False)
+    TYPES = Choices((0, 'server'), (1, 'patch_panel'), (3, 'network_device'))
 
-    class Meta:
-        ordering = ('rackid',)
+    #todo add support for power calc per cabinet
+    label = models.CharField(max_length=64)
+    type = models.IntegerField(choices=TYPES)
+    # rackid = models.ForeignKey(Rack)
+    # rackunit = models.IntegerField()
+    # unitsize = models.IntegerField()
+    # front = models.BooleanField(default=False)
+    # back = models.BooleanField(default=False)
+    # panel = models.BooleanField(default=False)
+
+    # class Meta:
+    #     ordering = ('rack',)
+        # abstract = True
 
     def __unicode__(self):
         return '%s' % self.label
 
+
+class HalfUnit(BaseModel):
+    #
+    # for rack in Rack.objects.filter(row__dcid=...):
+    #   for unit rack.units:
+    #
+    PARTS = Choices((0, 'front'), (1, 'back'))
+    rack = models.ForeignKey(Rack, related_name='units')
+    location = models.IntegerField()
+    # HalfUnit.PARTS.front
+    part = models.IntegerField(choices=PARTS)
+
+    # assets = Asset.objects.get(halfunit__rack=..).distinct()
+    # for asset_type in types:
+    #   TYPES[asset_type].objects.filter(pk__in=[....])
+
+    front = models.BooleanField(default=False)
+    # back = models.BooleanField(default=False)
+    # asset = models.ForeignKey(Asset)
+
+    # asset_id = models.PositiveIntegerField()
+    # asset_content_type = models.ForeignKey(ContentType)
+    # asset = GenericForeignKey('asset_content_type', 'asset_id')
+    asset = models.ForeignKey(Asset)
+
+    class Meta:
+        # TODO: explain
+        unique_together = ('rack', 'location', 'part')
+
+    def __unicode__(self):
+        return '%s, %s, %s' % (self.rackid, self.location, self.PARTS[self.part])
+
+class PatchPanel(Asset):
+    # parent_id =
+    # label = models.CharField(max_length=64)
+    pass
+
+class Server(Asset):
+    host_name = models.CharField(max_length=255)
+    VENDORS = Choices((0, 'Dell'))
+    vendor = models.IntegerField(choices=VENDORS)
+    ip_address = models.IPAddressField()
+    idrac = models.IPAddressField()
+
+class NetworkDevice(Asset):
+    host_name = models.CharField(max_length=255)
+    VENDORS = Choices((0, 'Cisco'))
+    vendor = models.IntegerField(choices=VENDORS)
+    ip_address = models.IPAddressField()
 
 class Port(BaseModel):
     """
@@ -191,14 +224,10 @@ class Port(BaseModel):
         port: (int) port number
         front: (boolean) if the port is in the front or the back of the rack
     """
-    assetid = models.ForeignKey(Asset)
-    slot = models.IntegerField(null=True, blank=True)
-    module = models.IntegerField(null=True, blank=True)
-    port = models.IntegerField(null=True, blank=True)
-    front = models.BooleanField(default=False)
+    patch_panel = models.ForeignKey(PatchPanel)
 
-    class Meta:
-        ordering = ('port',)
+    # class Meta:
+    #     ordering = ('port',)
 
 
 class CrossConnects(BaseModel):
@@ -210,3 +239,12 @@ class CrossConnects(BaseModel):
 
     class Meta:
         ordering = ('aside',)
+
+# for r in Row.objects.filter(dcid=Dc.objects.all()[0]):
+#     print r
+#     for rack in Rack.objects.filter(row=r):
+#         print '  ', rack
+# In [24]: rows = defaultdict(set)
+#
+# In [25]: for rack in Rack.objects.filter(row__dcid=Dc.objects.all()[0]).select_related('row'):
+#    ....:     rows[rack.row].add(rack)
