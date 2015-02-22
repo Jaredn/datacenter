@@ -141,10 +141,14 @@ class Asset(BaseModel):
         :hostname
         :asset_type
     """
-    ASSET_TYPES = Choices((0, 'server'), (1, 'panel'), (3, 'network'), (4, 'console'))
+    ASSET_TYPES = Choices((0, 'server'), (1, 'panel'), (2, 'network'), (3, 'console'))
 
     label = models.CharField(max_length=64)
     asset_type = models.IntegerField(choices=ASSET_TYPES)
+    row = models.ForeignKey(Row, default=None)
+
+    class Meta:
+        unique_together = ('label', 'row')
 
     def __unicode__(self):
         return '%s' % self.label

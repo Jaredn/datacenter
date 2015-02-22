@@ -2,7 +2,7 @@ __author__ = "Jeff d'Ambly"
 
 from django.test import TestCase
 
-from racklayout.models import Metro, Dc, Row, Rack
+from racklayout.models import Metro, Dc, Row, Rack, Asset
 
 
 # todo: Metro creation is copy pasta - duplicate code
@@ -118,7 +118,7 @@ class TestAllTheModels(TestCase):
         self.assertTrue(isinstance(rack, Rack))
         self.assertEqual(rack.__unicode__(), '%s%s' % (row.label, rack.label))
         self.assertEqual(rack.totalunits, 48)
-'''
+
     def test_asset_model_insert(self):
         metro = Metro()
         metro.label = 'ASH'
@@ -139,4 +139,7 @@ class TestAllTheModels(TestCase):
         rack.row = row
         # total units should default to 48
         rack.save()
-'''
+
+        asset = Asset()
+        asset.label = 'trr1-10f.lab.net'
+        asset.asset_type = asset.ASSET_TYPES[2]
