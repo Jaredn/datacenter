@@ -1,5 +1,5 @@
 from django.contrib import admin
-from racklayout.models import Metro, Dc, Asset, Port, Rack, Row
+from racklayout.models import Metro, Dc, Asset, Rack, Row
 # Register your models here.
 
 admin.site.register(Metro)
