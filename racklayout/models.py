@@ -145,10 +145,10 @@ class Asset(BaseModel):
 
     label = models.CharField(max_length=64)
     asset_type = models.IntegerField(choices=ASSET_TYPES)
-    row = models.ForeignKey(Row, default=None)
+    rack = models.ForeignKey(Rack, default=None)
 
     class Meta:
-        unique_together = ('label', 'row')
+        unique_together = ('label', 'rack')
 
     def __unicode__(self):
         return '%s' % self.label

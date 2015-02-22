@@ -2,10 +2,10 @@ __author__ = "Jeff d'Ambly"
 
 from django.test import TestCase
 
-from racklayout.models import Metro, Dc, Row, Rack, Asset
+from racklayout.models import Metro, Dc, Row, Rack, Asset, HalfUnit
 
 
-# todo: Metro creation is copy pasta - duplicate code
+# todo: Metro creation is copy pasta - duplicate code - use objects.create to fix this
 
 # model tests
 class TestAllTheModels(TestCase):
@@ -140,6 +140,31 @@ class TestAllTheModels(TestCase):
         # total units should default to 48
         rack.save()
 
-        asset = Asset()
-        asset.label = 'trr1-10f.lab.net'
-        asset.asset_type = asset.ASSET_TYPES[2]
+        #asset = Asset()
+        #asset.label = 'trr1-10f.lab.net'
+        #asset.asset_type = 2
+        #asset.rack = rack
+        asset = Asset.objects.create(label='trr1-10f.lab.net',
+                             asset_type=2,
+                             rack=rack)
+        self.assertTrue(isinstance(asset, Asset))
+        self.assertEqual(asset.label, 'trr1-10f.lab.net')
+        #self.assertNotEqual(asset.save(), None)
+
+    def test_halfunit_model_insert(self):
+        metro = Metro.objects.create(label='ASH')
+        dc = Dc.objects.create(number=1, metro=metro)
+        row = Row.objects.create(label=1, dc=dc)
+        rack = Rack.objects.create(label='A', row=row)
+        asset = Asset.objects.create(label='trr1-10f.lab.net',
+                             asset_type=2,
+                             rack=rack)
+        front_unit = HalfUnit.objects.create(part=0,
+                                             rack=rack,
+                                             location=48,
+                                             asset=asset)
+
+        self.assertTrue(isinstance(front_unit, HalfUnit))
+        self.assertEqual(front_unit.asset, asset)
+
+# todo have to check to make sure we have the same row and rack labels in mutiple dataceters
