@@ -223,3 +223,42 @@ class TestAllTheModels(TestCase):
 
         self.assertRaises(ValidationError, front_unit2.full_clean)
 
+    def test_create_production_data(self):
+        metro1 = Metro.objects.create(label='ASH')
+        metro2 = Metro.objects.create(label='PHX')
+        metro3 = Metro.objects.create(label='SJC')
+
+        metros = (metro1, metro2, metro3)
+
+        for metro in metros:
+            for i in xrange(10):
+                number = int(i)+1
+                dc = Dc(number=number, metro=metro)
+                dc.full_clean()
+                dc.save()
+
+        self.assertEqual(Dc.objects.all().count(), 30)
+
+        for dc in Dc.objects.all():
+            for i in 'ABCDEFGHIJ':
+                row = Row(label=i, dc=dc)
+                row.full_clean()
+                row.save()
+
+        self.assertEqual(Row.objects.all().count(), 300)
+
+        for row in Row.objects.all():
+            for i in xrange(10):
+                label = int(i)
+                rack = Rack(label=label, row=row)
+                rack.full_clean()
+                rack.save()
+
+        self.assertEqual(Rack.objects.all().count(), 3000)
+
+
+
+
+
+
+
