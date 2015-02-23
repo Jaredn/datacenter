@@ -49,6 +49,11 @@ class TestIndexView(TestCase):
         self.assertEqual(found.url_name, 'index')
         self.assertEqual(found.func.func_name, 'IndexView')
 
+    def test_static_url(self):
+        url = reverse('/static/')
+        print url
+        self.fail()
+
     def test_racklaout_rack_url(self):
         found = resolve(reverse('racklayout:rack', kwargs={'pk':1}))
         self.assertEqual(found.url_name, 'rack')
@@ -59,3 +64,34 @@ class TestIndexView(TestCase):
         found = resolve(reverse('racklayout:dc', kwargs={'dcid':1}))
         self.assertEqual(found.url_name, 'dc')
         self.assertEqual(found.func.func_name, 'RowView')
+
+    def test_index_view(self):
+        self.create_production_data()
+
+        url = reverse('racklayout:index')
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('datacenters' in response.context, 'Key datacenters not found in response.context' )
+        self.assertEqual(response.context['datacenters'].count(), 30)
+
+    def test_row_view(self):
+        self.create_production_data()
+
+        url = reverse('racklayout:dc', kwargs={'dcid':1})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('row' in response.context, 'Key row not found in response.context')
+
+    def test_rack_view(self):
+        self.create_production_data()
+
+        url = reverse('racklayout:rack', kwargs={'pk':1})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        #keys = ('rack', 'asset', 'height')
+
+        #for key in keys:
+        #    self.assertTrue(key in response.context, 'Key: %s not found in response.context' % key)

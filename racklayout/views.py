@@ -4,7 +4,7 @@ from django.views.generic import ListView, DetailView, TemplateView
 from django.views.generic.base import View
 from django.shortcuts import get_object_or_404
 #### app imports
-from racklayout.models import Dc, Rack, Asset
+from racklayout.models import Dc, Rack, Asset, Row
 
 # Create your views here.
 
@@ -21,11 +21,12 @@ class RowView(ListView):
     view for the all the rows in a datacenter
     Note: must use object_list in the template only way I could get it to work :/
     """
-    model = Rack
+    model = Row
     template_name = 'racklayout/row.html'
+    context_object_name = 'row'
 
     def get_object(self):
-        return self.queryset.objects.filter(rowid__dcid__id=self.kwargs['dcid'])
+        return self.queryset.objects.filter(row__dcid__id=self.kwargs['dcid'])
 
     def get_context_data(self, **kwargs):
         context = super(RowView, self).get_context_data(**kwargs)
@@ -50,6 +51,6 @@ class RackView(DetailView):
         # call the base implementaion to get a context
         context = super(RackView, self).get_context_data(**kwargs)
         # add all the assets
-        context['assets'] = Asset.objects.filter(rackid=self.rack)
-        context['height'] = [i+1 for i in range(self.rack.totalunits)]
+        #context['assets'] = Asset.objects.filter(rackid=self.rack)
+        #context['height'] = [i+1 for i in range(self.rack.totalunits)]
         return context
