@@ -144,14 +144,10 @@ class TestAllTheModels(TestCase):
         # total units should default to 48
         rack.save()
 
-        unit = HalfUnit(part=0,
-                        rack=rack,
-                        location=48)
-        unit.save()
-
         asset = Asset.objects.create(label='trr1-10f.lab.net',
-                             asset_type=2,
-                             unit=unit)
+                     asset_type=2,
+                     rack=rack)
+
         self.assertTrue(isinstance(asset, Asset))
         self.assertEqual(asset.__unicode__(), 'trr1-10f.lab.net')
         #self.assertNotEqual(asset.save(), None)
@@ -161,12 +157,11 @@ class TestAllTheModels(TestCase):
         dc = Dc.objects.create(number=1, metro=metro)
         row = Row.objects.create(label=1, dc=dc)
         rack = Rack.objects.create(label='A', row=row)
-        front_unit = HalfUnit.objects.create(part=0,
-                                       rack=rack,
-                                       location=48)
+        asset = Asset.objects.create(label='trr1-10f.lab.net', asset_type=2, rack=rack)
+        front_unit = HalfUnit.objects.create(part=0, asset=asset, location=48)
 
         self.assertTrue(isinstance(front_unit, HalfUnit))
-        self.assertEqual(front_unit.__unicode__(), '%s, %s, %s' % (rack, 48, 'front') )
+        self.assertEqual(front_unit.__unicode__(), '%s, %s, %s' % (asset, 48, 'front') )
 
 # todo have to check to make sure we have the same row and rack labels in mutiple dataceters
 
@@ -221,5 +216,10 @@ class TestAllTheModels(TestCase):
         dc = Dc.objects.create(number=1, metro=metro)
         row = Row.objects.create(label='A', dc=dc)
         rack = Rack.objects.create(label='1', row=row)
-        front_unit = HalfUnit.objects.create(part=0,
-                                            location=48,)
+        asset = Asset.objects.create(label='trr1-10f.lab.net', asset_type=2, rack=rack)
+        front_unit1 = HalfUnit.objects.create(part=0, location=48, asset=asset)
+
+        front_unit2 = HalfUnit(part=0, location=48, asset=asset)
+
+        self.assertRaises(ValidationError, front_unit2.full_clean)
+
