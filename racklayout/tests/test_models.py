@@ -1,3 +1,4 @@
+from pprint import pprint
 from django.core.exceptions import ValidationError
 
 __author__ = "Jeff d'Ambly"
@@ -256,6 +257,10 @@ class TestAllTheModels(TestCase):
 
         self.assertEqual(Rack.objects.all().count(), 3000)
 
+        rows = Row.objects.filter(dc__number=1, dc__metro__label='ASH')
+
+        for row in rows:
+            self.assertEqual(row.racks.count(), 10)
 
 
 
