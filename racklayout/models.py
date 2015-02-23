@@ -185,4 +185,4 @@ class HalfUnit(BaseModel):
         unique_together = ('rack', 'location', 'part')
 
     def __unicode__(self):
-        return '%s, %s, %s' % (self.rackid, self.location, self.PARTS[self.part])
+        return '%s, %s, %s' % (self.rack, self.location, self.PARTS[self.part])
