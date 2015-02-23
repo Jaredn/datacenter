@@ -92,6 +92,7 @@ class Row(BaseModel):
 
     class Meta:
         ordering = ('label',)
+        unique_together = ('dc', 'label')
 
     def __unicode__(self):
         return '%s' % self.label
@@ -118,7 +119,7 @@ class Rack(BaseModel):
                                  )
                              ]
                              )
-    row = models.ForeignKey(Row)
+    row = models.ForeignKey(Row, related_name='rows')
     totalunits = models.IntegerField(default=48)
 
     class Meta:
@@ -126,6 +127,40 @@ class Rack(BaseModel):
 
     def __unicode__(self):
         return '%s%s' % (self.row.label, self.label)
+
+
+class HalfUnit(BaseModel):
+    """
+    class for the units in a rack. A rack unit is split into two parts
+    front and back. This allows to assets that have a half rack depth
+    to support assets in the front and patch panels in the back or
+    vice versa
+    """
+    PARTS = Choices((0, 'front'), (1, 'back'))
+    rack = models.ForeignKey(Rack, related_name='racks')
+    location = models.IntegerField()
+    # HalfUnit.PARTS.front
+    part = models.IntegerField(choices=PARTS)
+
+    # assets = Asset.objects.get(halfunit__rack=..).distinct()
+    # for asset_type in types:
+    #   TYPES[asset_type].objects.filter(pk__in=[....])
+
+    # front = models.BooleanField(default=False)
+    # back = models.BooleanField(default=False)
+    # asset = models.ForeignKey(Asset)
+
+    # asset_id = models.PositiveIntegerField()
+    # asset_content_type = models.ForeignKey(ContentType)
+    # asset = GenericForeignKey('asset_content_type', 'asset_id')
+    #asset = models.ForeignKey(Asset)
+
+    class Meta:
+        ordering = ('location', 'rack__label')
+        unique_together = ('rack', 'location', 'part')
+
+    def __unicode__(self):
+        return '%s, %s, %s' % (self.rack, self.location, self.PARTS[self.part])
 
 
 class Asset(BaseModel):
@@ -145,44 +180,10 @@ class Asset(BaseModel):
 
     label = models.CharField(max_length=64)
     asset_type = models.IntegerField(choices=ASSET_TYPES)
-    rack = models.ForeignKey(Rack, default=None)
+    unit = models.ForeignKey(HalfUnit, default=None, related_name='units')
 
     class Meta:
-        unique_together = ('label', 'rack')
+        unique_together = ('label', 'unit')
 
     def __unicode__(self):
         return '%s' % self.label
-
-
-class HalfUnit(BaseModel):
-    """
-    class for the units in a rack. A rack unit is split into two parts
-    front and back. This allows to assets that have a half rack depth
-    to support assets in the front and patch panels in the back or
-    vice versa
-    """
-    PARTS = Choices((0, 'front'), (1, 'back'))
-    rack = models.ForeignKey(Rack, related_name='units')
-    location = models.IntegerField()
-    # HalfUnit.PARTS.front
-    part = models.IntegerField(choices=PARTS)
-
-    # assets = Asset.objects.get(halfunit__rack=..).distinct()
-    # for asset_type in types:
-    #   TYPES[asset_type].objects.filter(pk__in=[....])
-
-    # front = models.BooleanField(default=False)
-    # back = models.BooleanField(default=False)
-    # asset = models.ForeignKey(Asset)
-
-    # asset_id = models.PositiveIntegerField()
-    # asset_content_type = models.ForeignKey(ContentType)
-    # asset = GenericForeignKey('asset_content_type', 'asset_id')
-    asset = models.ForeignKey(Asset)
-
-    class Meta:
-        ordering = ('location', 'rack__label')
-        unique_together = ('rack', 'location', 'part')
-
-    def __unicode__(self):
-        return '%s, %s, %s' % (self.rack, self.location, self.PARTS[self.part])

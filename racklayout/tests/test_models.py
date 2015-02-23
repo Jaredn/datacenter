@@ -1,3 +1,5 @@
+from django.core.exceptions import ValidationError
+
 __author__ = "Jeff d'Ambly"
 
 from django.test import TestCase
@@ -22,7 +24,9 @@ class TestAllTheModels(TestCase):
         metro = Metro()
         metro.lab = 'a12'
 
+        self.assertRaises(ValidationError, metro.full_clean)
         self.assertEqual(metro.save(), None)
+
 
     def test_dc_model_insert(self):
         metro = Metro()
@@ -140,13 +144,14 @@ class TestAllTheModels(TestCase):
         # total units should default to 48
         rack.save()
 
-        #asset = Asset()
-        #asset.label = 'trr1-10f.lab.net'
-        #asset.asset_type = 2
-        #asset.rack = rack
+        unit = HalfUnit(part=0,
+                        rack=rack,
+                        location=48)
+        unit.save()
+
         asset = Asset.objects.create(label='trr1-10f.lab.net',
                              asset_type=2,
-                             rack=rack)
+                             unit=unit)
         self.assertTrue(isinstance(asset, Asset))
         self.assertEqual(asset.__unicode__(), 'trr1-10f.lab.net')
         #self.assertNotEqual(asset.save(), None)
@@ -156,13 +161,9 @@ class TestAllTheModels(TestCase):
         dc = Dc.objects.create(number=1, metro=metro)
         row = Row.objects.create(label=1, dc=dc)
         rack = Rack.objects.create(label='A', row=row)
-        asset = Asset.objects.create(label='trr1-10f.lab.net',
-                             asset_type=2,
-                             rack=rack)
         front_unit = HalfUnit.objects.create(part=0,
-                                             rack=rack,
-                                             location=48,
-                                             asset=asset)
+                                       rack=rack,
+                                       location=48)
 
         self.assertTrue(isinstance(front_unit, HalfUnit))
         self.assertEqual(front_unit.__unicode__(), '%s, %s, %s' % (rack, 48, 'front') )
@@ -179,16 +180,46 @@ class TestAllTheModels(TestCase):
         metro = Metro.objects.create(label='ASH')
         dc1 = Dc.objects.create(number=1, metro=metro)
         dc2 = Dc.objects.create(number=2, metro=metro)
-        dc1row1 = Row(label='', dc=dc1)
-
+        dc1row1 = Row(label='A', dc=dc1)
+        dc1row1.full_clean()
         dc1row1.save()
         dc2row1 = Row(label='A', dc=dc2)
+        dc2row1.full_clean()
         dc2row1.save()
-
-        print Row.objects.all()
 
         self.assertTrue(isinstance(metro, Metro))
         self.assertTrue(isinstance(dc1, Dc))
         self.assertTrue(isinstance(dc2, Dc))
         self.assertTrue(isinstance(dc1row1, Row))
         self.assertTrue(isinstance(dc2row1, Row))
+
+    def test_insert_two_of_the_same_rows_in_the_same_dc(self):
+        metro = Metro.objects.create(label='ASH')
+        dc1 = Dc.objects.create(number=1, metro=metro)
+
+        dc1row1 = Row(label='A', dc=dc1)
+        dc1row1.full_clean()
+        dc1row1.save()
+        dc2row1 = Row(label='A', dc=dc1)
+
+        self.assertRaises(ValidationError, dc2row1.full_clean)
+
+    def test_insert_two_of_the_same_rack_in_the_same_row(self):
+
+        metro = Metro.objects.create(label='ASH')
+        dc = Dc.objects.create(number=1, metro=metro)
+        row = Row.objects.create(label='A', dc=dc)
+        rack1 = Rack(label=1, row=row)
+        rack1.full_clean()
+        rack1.save()
+
+        rack2 = Rack(label=1, row=row)
+        self.assertRaises(ValidationError, rack2.full_clean())
+
+    def test_insert_two_of_the_same_assset_in_the_same_unit(self):
+        metro = Metro.objects.create(label='ASH')
+        dc = Dc.objects.create(number=1, metro=metro)
+        row = Row.objects.create(label='A', dc=dc)
+        rack = Rack.objects.create(label='1', row=row)
+        front_unit = HalfUnit.objects.create(part=0,
+                                            location=48,)
