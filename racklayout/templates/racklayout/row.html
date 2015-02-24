@@ -2,13 +2,37 @@
 {% load staticfiles %}
 {% block title %}Dacenter{% endblock %}
 {% block content %}
+<script>
+function toggler(divId) {
+    $("#" + divId).toggle();
+}
+$(document).ready(function(){
+    $("#hiddenAddRow").hide();
+    $.get("{% url 'racklayout:createrow' %}", function(data){
+        $("#hiddenAddRow").append(data);
+    });
+
+});
+</script>
 
     <div class="col-md-12">
         <div class="panel panel-primary">
             <div class="panel-heading clearfix">
-                <H3 class="panel-title pull-left">{{ datacenter.label }}</H3>
+                <H3 class="panel-title pull-left">{{ datacenter }}</H3>
+                <div class="col-sm-3 col-md-3 pull-right">
+                   <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="query" id="srch-term">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="searchsubmit"><i class="glyphicon glyphicon-search"></i></button>
+                            <button class="btn btn-default" id="addrow" onclick="toggler('hiddenAddRow');"><i class="glyphicon glyphicon-plus-sign" style="color: #0099FF"></i></button>
+                        </div>
+                   </div>
+                 </div>
+                </div>
             </div>
-
+        </div>
+        <div id ='hiddenAddRow'>
+        <!-- place holder for /create/row -->
         </div>
         {% if object_list %}
         <div class="row">
@@ -17,7 +41,6 @@
                 <H1>{{ rack.rowid.label }}{{ rack.label }}</H1>
             </div>
         {% endfor %}
-         </div>
     {% else %}
         <H1> empty query set</H1>
     {% endif %}

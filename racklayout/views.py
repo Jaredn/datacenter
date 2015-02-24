@@ -1,6 +1,7 @@
+from django.core.urlresolvers import reverse
 from django.shortcuts import render
 from django.http import HttpResponse
-from django.views.generic import ListView, DetailView, TemplateView
+from django.views.generic import ListView, DetailView, CreateView
 from django.views.generic.base import View
 from django.shortcuts import get_object_or_404
 #### app imports
@@ -54,3 +55,20 @@ class RackView(DetailView):
         #context['assets'] = Asset.objects.filter(rackid=self.rack)
         #context['height'] = [i+1 for i in range(self.rack.totalunits)]
         return context
+
+
+class CreateDc(CreateView):
+
+    model = Dc
+    fields = ['metro', 'number']
+    success_url = "/racklayout/"
+
+
+class CreateRow(CreateView):
+    model = Row
+    fields = ['dc', 'label']
+
+    def get_absolute_url(self):
+        return reverse('racklayout:row', kwargs={'dcid': self.fields['dc']})
+
+

@@ -1,8 +1,9 @@
 from pprint import pprint
+from django.http import HttpRequest
 from django.test import TestCase
 from racklayout.models import Metro, Dc, Rack, Row
 from django.core.urlresolvers import resolve, Resolver404, reverse
-from racklayout.views import IndexView
+from racklayout.views import CreateDc
 
 class TestIndexView(TestCase):
 
@@ -49,11 +50,6 @@ class TestIndexView(TestCase):
         self.assertEqual(found.url_name, 'index')
         self.assertEqual(found.func.func_name, 'IndexView')
 
-    def test_static_url(self):
-        url = reverse('/static/')
-        print url
-        self.fail()
-
     def test_racklaout_rack_url(self):
         found = resolve(reverse('racklayout:rack', kwargs={'pk':1}))
         self.assertEqual(found.url_name, 'rack')
@@ -64,6 +60,11 @@ class TestIndexView(TestCase):
         found = resolve(reverse('racklayout:dc', kwargs={'dcid':1}))
         self.assertEqual(found.url_name, 'dc')
         self.assertEqual(found.func.func_name, 'RowView')
+
+    def test_createdc_url(self):
+        found = resolve(reverse('racklayout:createdc'))
+        self.assertEqual(found.url_name, 'createdc')
+        self.assertEqual(found.func.func_name, 'CreateDc')
 
     def test_index_view(self):
         self.create_production_data()
@@ -95,3 +96,17 @@ class TestIndexView(TestCase):
 
         #for key in keys:
         #    self.assertTrue(key in response.context, 'Key: %s not found in response.context' % key)
+
+    def test_createdc_view_can_save_a_post(self):
+        metro = Metro.objects.create(label='ASH')
+
+        request = HttpRequest()
+        request.method = 'POST'
+        request.POST['number'] = 1
+        request.POST['metro'] = 1
+
+        # todo figure out how this works with (request) doesn't make sense to me
+        response = CreateDc.as_view()(request)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Dc.objects.all().count(), 1)

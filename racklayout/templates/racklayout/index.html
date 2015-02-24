@@ -2,20 +2,37 @@
 {% load staticfiles %}
 {% block title %}DataCenter{% endblock %}
 {% block content %}
+<script>
+function toggler(divId) {
+    $("#" + divId).toggle();
+}
+$(document).ready(function(){
+    $("#hiddenAddDc").hide();
+    $.get("{% url 'racklayout:createdc' %}", function(data){
+        $("#hiddenAddDc").append(data);
+    });
+
+});
+</script>
 
     <div class="col-md-12">
         <div class="panel panel-primary">
             <div class="panel-heading clearfix">
-                 <H3 class="panel-title pull-left">Datacenters</H3>
-            </div>
+                 <H1 class="panel-title pull-left">Datacenters</H1>
+
              <div class="col-sm-3 col-md-3 pull-right">
                <div class="input-group">
                     <input type="text" class="form-control" placeholder="Search" name="query" id="srch-term">
                     <div class="input-group-btn">
                         <button class="btn btn-default" id="searchsubmit"><i class="glyphicon glyphicon-search"></i></button>
+                        <button class="btn btn-default" id="adddc" onclick="toggler('hiddenAddDc');"><i class="glyphicon glyphicon-plus-sign" style="color: #0099FF"></i></button>
                     </div>
                </div>
              </div>
+            </div>
+        </div>
+        <div id="hiddenAddRow">
+        <!-- place holder for /create/dc -->
         </div>
         <div id="metrotable" class="table-responsive">
             <table id="metrotable" class="table table-condensed table-hover">
@@ -29,8 +46,8 @@
                 {% if datacenters %}
                 {% for datacenter in datacenters %}
                     <tr>
-                        <td>{{ datacenter.metroid.label }}</td>
-                        <td><a href="{% url 'racklayout:dc' datacenter.id %}"> {{ datacenter.label }}</a></td>
+                        <td>{{ datacenter.metro }}</td>
+                        <td><a href="{% url 'racklayout:dc' datacenter.id %}"> {{ datacenter }}</a></td>
                     </tr>
                 {% endfor %}
                 {% else %}

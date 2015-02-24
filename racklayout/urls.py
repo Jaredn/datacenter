@@ -20,4 +20,14 @@ urlpatterns = patterns('',
                           view=views.RackView.as_view(),
                           name='rack'
                       ),
+                      url(
+                          regex=r'create/dc',
+                          view=views.CreateDc.as_view(),
+                          name='createdc'
+                      ),
+                      url(
+                          regex=r'create/row',
+                          view=views.CreateRow.as_view(),
+                          name='createrow'
+                      ),
 )
