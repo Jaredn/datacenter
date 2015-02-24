@@ -18,18 +18,22 @@
         <div class='row'>
             {% if assets %}
                 <div class="col-md-1">
-                {% for i in height %}
+                {% for i in totalunits %}
                  <div class="row">
-                    <H3>{{ i }}</H3>
+                    {{ i }}
                 </div>
                 {% endfor %}
                 </div>
-                <div class="col-md-6">
-                {% for asset in assets %}
-                <div class="row">
-                    {{ asset.label }}
-                </div>
-                {%  endfor %}
+                <div class="col-md-3">
+                {% for i in totalunits %}
+                    {% for asset in assets %}
+                        {% if asset.units.last.location == i %}
+                            <div class="row" style="adding: 0.1em; margin: 0.1em; border: 1px solid grey">{{ asset.get_asset_type_display }}: {{ asset }}</div>
+                        {% else %}
+                            <div class="row" style="adding: 0.1em; margin: 0.1em; border: 1px solid grey">empty</div>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
                 </div>
             {% else %}
             <H2><a href="#">Click here to add Assets to this Rack</a> </H2>

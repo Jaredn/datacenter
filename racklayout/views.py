@@ -54,8 +54,9 @@ class RackView(DetailView):
         # call the base implementaion to get a context
         context = super(RackView, self).get_context_data(**kwargs)
         # add all the assets
-        #context['assets'] = Asset.objects.filter(rackid=self.rack)
-        #context['height'] = [i+1 for i in range(self.rack.totalunits)]
+        context['assets'] = Asset.objects.filter(rack=self.rack)
+        context['totalunits'] = range(1, self.rack.totalunits+1)[::-1]
+
         return context
 
 
