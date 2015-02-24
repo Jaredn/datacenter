@@ -26,8 +26,10 @@ class RowView(ListView):
     template_name = 'racklayout/row.html'
     context_object_name = 'row'
 
-    def get_object(self):
-        return self.queryset.objects.filter(row__dcid__id=self.kwargs['dcid'])
+    #def get_object(self):
+    #    return self.queryset.objects.filter(row__dc__dc_id=self.kwargs['dcid'])
+    def get_queryset(self):
+        return Row.objects.filter(dc_id=self.kwargs['dcid'])
 
     def get_context_data(self, **kwargs):
         context = super(RowView, self).get_context_data(**kwargs)
@@ -46,7 +48,7 @@ class RackView(DetailView):
 
     def get_queryset(self):
         self.rack = get_object_or_404(Rack, pk=self.kwargs['pk'])
-        return Rack.objects.filter(pk=self.kwargs['pk'])
+        return self.model.objects.filter(pk=self.kwargs['pk'])
 
     def get_context_data(self, **kwargs):
         # call the base implementaion to get a context
@@ -68,7 +70,16 @@ class CreateRow(CreateView):
     model = Row
     fields = ['dc', 'label']
 
-    def get_absolute_url(self):
-        return reverse('racklayout:row', kwargs={'dcid': self.fields['dc']})
 
+class CreateRack(CreateView):
+    model = Rack
+    fields = ['row', 'label', 'totalunits']
 
+    def get_queryset(self):
+        return self.model._default_manager.all()
+
+    def get_context_data(self, **kwargs):
+        context = super(CreateRack, self).get_context_data(**kwargs)
+        context['datacenter'] = self.kwargs['pk']
+
+        return context

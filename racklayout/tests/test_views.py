@@ -110,3 +110,21 @@ class TestIndexView(TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Dc.objects.all().count(), 1)
+
+    def test_row_view_filters_queryset(self):
+        self.create_production_data()
+
+        url = reverse('racklayout:dc', kwargs={'dcid': 1})
+        response = self.client.get(url)
+
+        self.assertEqual(response.context['object_list'].count(), 10)
+
+    def test_get_create_row(self):
+        self.create_production_data()
+
+        url = reverse('racklayout:createrow', kwargs={'pk': 1})
+        response = self.client.get(url)
+        print 'pk' in response.context
+        pprint(response.context)
+        pprint(response.context['form'])
+        self.fail()

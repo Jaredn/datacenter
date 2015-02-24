@@ -1,4 +1,5 @@
 from django.contrib.contenttypes.models import ContentType
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.core.validators import RegexValidator
 # non django imports
@@ -97,6 +98,8 @@ class Row(BaseModel):
     def __unicode__(self):
         return '%s' % self.label
 
+    def get_absolute_url(self):
+        return reverse('racklayout:dc', kwargs={'dcid': self.dc_id})
 
 class Rack(BaseModel):
     """
@@ -128,6 +131,8 @@ class Rack(BaseModel):
     def __unicode__(self):
         return '%s%s' % (self.row.label, self.label)
 
+    def get_absolute_url(self):
+        return reverse('racklayout:dc', kwargs={'dcid': self.row.dc_id})
 
 class Asset(BaseModel):
     """
