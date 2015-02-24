@@ -173,7 +173,7 @@ class HalfUnit(BaseModel):
     part = models.IntegerField(choices=PARTS)
 
     class Meta:
-        ordering = ('location', 'rack__label')
+        ordering = ('location', 'asset')
         unique_together = ('asset', 'location', 'part')
 
     def __unicode__(self):
