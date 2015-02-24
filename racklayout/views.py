@@ -70,13 +70,32 @@ class CreateRow(CreateView):
     model = Row
     fields = ['dc', 'label']
 
+    def get_initial(self):
+        intial = super(CreateRow, self).get_initial()
+        intial['dc'] = get_object_or_404(Dc, pk=self.kwargs['pk'])
+        return intial
+
+    def get_form(self, form_class):
+        form = super(CreateRow, self).get_form(form_class)
+        datacenter = get_object_or_404(Dc, pk=self.kwargs['pk'])
+        form.fields['dc'].queryset = Dc.objects.filter(pk=datacenter.id)
+        return form
+
+    def get_context_data(self, **kwargs):
+        context = super(CreateRow, self).get_context_data(**kwargs)
+        context['datacenter'] = self.kwargs['pk']
+
+        return context
 
 class CreateRack(CreateView):
     model = Rack
     fields = ['row', 'label', 'totalunits']
 
-    def get_queryset(self):
-        return self.model._default_manager.all()
+    def get_form(self, form_class):
+        form = super(CreateRack, self).get_form(form_class)
+        datacenter = get_object_or_404(Dc, pk=self.kwargs['pk'])
+        form.fields['row'].queryset = Row.objects.filter(dc=datacenter)
+        return form
 
     def get_context_data(self, **kwargs):
         context = super(CreateRack, self).get_context_data(**kwargs)

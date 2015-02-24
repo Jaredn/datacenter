@@ -124,7 +124,7 @@ class TestIndexView(TestCase):
 
         url = reverse('racklayout:createrow', kwargs={'pk': 1})
         response = self.client.get(url)
-        print 'pk' in response.context
+        #print 'pk' in response.context
         pprint(response.context)
         pprint(response.context['form'])
         self.fail()

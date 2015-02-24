@@ -1,4 +1,5 @@
-<form class="form-inline" id="createRow" action="{% url 'racklayout:createrow' 1 %}" method="post">
+<form class="form-inline" id="createRow" action="{% url 'racklayout:createrow' datacenter %}" method="post">
+<legend>Create Row</legend>
     {% csrf_token %}
     {%  for field in form %}
         {% if field.errors %}
