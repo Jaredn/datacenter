@@ -48,7 +48,7 @@ $(document).ready(function(){
             <div class="row">
             {% for rack in row.racks.all %}
             <div class="col-md-1 text-left" style="padding: 0.1em; margin: 0.1em; border: 1px solid grey">
-                <H1>{{ rack }}</H1>
+                <H1><a href="{% url 'racklayout:rack' rack.id %}"> {{ rack }}</a></H1>
             </div>
             {% endfor %}
             </div>
