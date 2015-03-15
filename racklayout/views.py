@@ -57,6 +57,24 @@ class RackView(DetailView):
         context['assets'] = Asset.objects.filter(rack=self.rack)
         context['totalunits'] = range(1, self.rack.totalunits+1)[::-1]
 
+        assets =  context['assets']
+        totalunits = context['totalunits']
+        # create a dict that can used in the template to render the rack
+        result = {}
+        for unit in totalunits:
+            result.update({unit: {'type': '', 'label': 'empty'}})
+
+        # populate the assets into the result dict
+        for asset in assets:
+            key = asset.units.first().location
+            result[key]['label'] = asset
+            result[key]['type'] = asset.get_asset_type_display()
+            for unit in asset.units.all()[1:]:
+                result[unit.location]['type'] = 'filled'
+                result[unit.location]['label'] = 'filled'
+
+        context['rackunits'] = result
+
         return context
 
 

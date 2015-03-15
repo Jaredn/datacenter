@@ -14,32 +14,17 @@
                 {% endif %}
             </h3>
         </div>
+            {% for unit, item in rackunits.iteritems %}
+                <div class ='row'>
+                <div class="col-md-1">{{ unit }}</div>
+                <div class="col-md-1">{{ item.label }}</div>
+                </div>
 
-        <div class='row'>
-            {% if assets %}
-                <div class="col-md-1">
-                {% for i in totalunits %}
-                 <div class="row">
-                    {{ i }}
-                </div>
-                {% endfor %}
-                </div>
-                <div class="col-md-3">
-                {% for i in totalunits %}
-                    {% for asset in assets %}
-                        {% if asset.units.last.location == i %}
-                            <div class="row" style="adding: 0.1em; margin: 0.1em; border: 1px solid grey">{{ asset.get_asset_type_display }}: {{ asset }}</div>
-                        {% else %}
-                            <div class="row" style="adding: 0.1em; margin: 0.1em; border: 1px solid grey">empty</div>
-                        {% endif %}
-                    {% endfor %}
-                {% endfor %}
-                </div>
-            {% else %}
-            <H2><a href="#">Click here to add Assets to this Rack</a> </H2>
-            {% endif %}
+            {% endfor %}
         </div>
-    </div>
+
 </div>
+
+<pre>{{ rackunits }}</pre>
 
 {% endblock %}
