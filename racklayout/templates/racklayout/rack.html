@@ -14,17 +14,21 @@
                 {% endif %}
             </h3>
         </div>
-            {% for unit, item in rackunits.iteritems %}
-                <div class ='row'>
-                <div class="col-md-1">{{ unit }}</div>
-                <div class="col-md-1">{{ item.label }}</div>
+        <div class="panel-body">
+           {% for row in listunits %}
+            {% for unit, item in row.iteritems %}
+                <div class ='row' >
+                <div class="col-md-1" style="rowcount: 2;padding: 0.0em; border: 1px solid grey">{{ unit }}</div>
+                <div class="col-md-3" style="padding: 0.0em; border: 1px solid grey">{{ item.label }}</div>
                 </div>
 
             {% endfor %}
+           {%  endfor %}
         </div>
 
 </div>
 
 <pre>{{ rackunits }}</pre>
+<pre>{{ listunits }}</pre>
 
 {% endblock %}

@@ -60,6 +60,7 @@ class RackView(DetailView):
         assets =  context['assets']
         totalunits = context['totalunits']
         # create a dict that can used in the template to render the rack
+        listresult = []
         result = {}
         for unit in totalunits:
             result.update({unit: {'type': '', 'label': 'empty'}})
@@ -73,7 +74,11 @@ class RackView(DetailView):
                 result[unit.location]['type'] = 'filled'
                 result[unit.location]['label'] = 'filled'
 
+        for each in result:
+            listresult.append({each: result[each]})
+
         context['rackunits'] = result
+        context['listunits'] = listresult[::-1]
 
         return context
 
