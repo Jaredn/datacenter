@@ -36,6 +36,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',
+    'coverage',
     #'debug_toolbar',
     'racklayout',
 )
@@ -87,6 +89,7 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
+    '/Users/jeff_dambly/code/datacenter/static',
 )
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR,  'templates'),

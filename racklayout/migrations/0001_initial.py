@@ -17,27 +17,11 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
-                ('label', models.CharField(max_length=64)),
-                ('rackunit', models.IntegerField()),
-                ('unitsize', models.IntegerField()),
-                ('front', models.BooleanField(default=False)),
-                ('back', models.BooleanField(default=False)),
-                ('panel', models.BooleanField(default=False)),
+                ('hostname', models.CharField(max_length=64)),
+                ('asset_type', models.IntegerField(choices=[(0, b'server'), (1, b'panel'), (3, b'network'), (4, b'console')])),
             ],
             options={
-                'ordering': ('rackid',),
-            },
-            bases=(models.Model,),
-        ),
-        migrations.CreateModel(
-            name='CrossConnects',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('modified', models.DateTimeField(auto_now=True)),
-            ],
-            options={
-                'ordering': ('aside',),
+                'abstract': False,
             },
             bases=(models.Model,),
         ),
@@ -47,10 +31,25 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
-                ('label', models.CharField(unique=True, max_length=4, validators=[django.core.validators.RegexValidator(regex=b'^[A-Z]{3}\\d+', message=b'DC must be 3 capital letters followed by a number', code=b'invalid_dc')])),
+                ('number', models.IntegerField()),
             ],
             options={
-                'ordering': ('label',),
+                'ordering': ('metro__label', 'number'),
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='HalfUnit',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('created', models.DateTimeField(auto_now_add=True)),
+                ('modified', models.DateTimeField(auto_now=True)),
+                ('location', models.IntegerField()),
+                ('part', models.IntegerField(choices=[(0, b'front'), (1, b'back')])),
+                ('asset', models.ForeignKey(to='racklayout.Asset')),
+            ],
+            options={
+                'ordering': ('location', 'rack__label'),
             },
             bases=(models.Model,),
         ),
@@ -68,23 +67,6 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='Port',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('modified', models.DateTimeField(auto_now=True)),
-                ('slot', models.IntegerField(null=True, blank=True)),
-                ('module', models.IntegerField(null=True, blank=True)),
-                ('port', models.IntegerField(null=True, blank=True)),
-                ('front', models.BooleanField(default=False)),
-                ('assetid', models.ForeignKey(to='racklayout.Asset')),
-            ],
-            options={
-                'ordering': ('port',),
-            },
-            bases=(models.Model,),
-        ),
-        migrations.CreateModel(
             name='Rack',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
@@ -94,7 +76,7 @@ class Migration(migrations.Migration):
                 ('totalunits', models.IntegerField(default=48)),
             ],
             options={
-                'ordering': ('rowid',),
+                'ordering': ('row',),
             },
             bases=(models.Model,),
         ),
@@ -105,7 +87,7 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
                 ('label', models.CharField(max_length=3, validators=[django.core.validators.RegexValidator(regex=b'^[A-Z]+$|^\\d+$', message=b'Row is either letters or number not both', code=b'invalid_row')])),
-                ('dcid', models.ForeignKey(to='racklayout.Dc')),
+                ('dc', models.ForeignKey(to='racklayout.Dc')),
             ],
             options={
                 'ordering': ('label',),
@@ -114,32 +96,28 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='rack',
-            name='rowid',
+            name='row',
             field=models.ForeignKey(to='racklayout.Row'),
             preserve_default=True,
         ),
         migrations.AddField(
+            model_name='halfunit',
+            name='rack',
+            field=models.ForeignKey(related_name='units', to='racklayout.Rack'),
+            preserve_default=True,
+        ),
+        migrations.AlterUniqueTogether(
+            name='halfunit',
+            unique_together=set([('rack', 'location', 'part')]),
+        ),
+        migrations.AddField(
             model_name='dc',
-            name='metroid',
+            name='metro',
             field=models.ForeignKey(to='racklayout.Metro'),
             preserve_default=True,
         ),
-        migrations.AddField(
-            model_name='crossconnects',
-            name='aside',
-            field=models.ForeignKey(related_name='aside', to='racklayout.Port'),
-            preserve_default=True,
-        ),
-        migrations.AddField(
-            model_name='crossconnects',
-            name='zside',
-            field=models.ForeignKey(related_name='zside', to='racklayout.Port'),
-            preserve_default=True,
-        ),
-        migrations.AddField(
-            model_name='asset',
-            name='rackid',
-            field=models.ForeignKey(to='racklayout.Rack'),
-            preserve_default=True,
+        migrations.AlterUniqueTogether(
+            name='dc',
+            unique_together=set([('number', 'metro')]),
         ),
     ]

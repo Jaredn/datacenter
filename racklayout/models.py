@@ -1,9 +1,12 @@
+from django.contrib.contenttypes.models import ContentType
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.core.validators import RegexValidator
-#### non django imports
-
-
+# non django imports
+from model_utils import Choices
 # Create your models here.
+
+# todo: label should have a regext to accept hostnames of devices and the convention for patch panels
 
 
 class BaseModel(models.Model):
@@ -26,7 +29,7 @@ class Metro(BaseModel):
     """
     class for metro
     :param
-        lable: (str) ASH -> 3 letter code
+        label: (str) ASH -> 3 letter code
 
     validation rules:
         must be unique
@@ -58,32 +61,25 @@ class Dc(BaseModel):
         must be unique
         must be a three capital letter code followed by a number
     """
-    label = models.CharField(max_length=4,
-                             unique=True,
-                             validators=[
-                                 RegexValidator(
-                                     regex='^[A-Z]{3}\d+',
-                                     message='DC must be 3 capital letters followed by a number',
-                                     code='invalid_dc'
-                                 )
-                             ]
-                             )
-    metroid = models.ForeignKey(Metro)
+    number = models.IntegerField()
+    metro = models.ForeignKey(Metro)
 
     class Meta:
-        ordering = ('label',)
+        ordering = ('metro__label', 'number')
+        # migration tool will insert a constraint in DB
+        unique_together = ('number', 'metro')
 
     def __unicode__(self):
-        return '%s' % self.label
+        return '%s%d' % (self.metro.label, self.number)
 
 
 class Row(BaseModel):
     """
     class for a row in a data center
     :param
-        label: (str) exmaple F or 10
+        label: (str) example F or 10
     """
-    dcid = models.ForeignKey(Dc)
+    dc = models.ForeignKey(Dc)
     label = models.CharField(max_length=3,
                              unique=False,
                              validators=[
@@ -97,9 +93,13 @@ class Row(BaseModel):
 
     class Meta:
         ordering = ('label',)
+        unique_together = ('dc', 'label')
 
     def __unicode__(self):
         return '%s' % self.label
+
+    def get_absolute_url(self):
+        return reverse('racklayout:dc', kwargs={'dcid': self.dc_id})
 
 class Rack(BaseModel):
     """
@@ -122,16 +122,17 @@ class Rack(BaseModel):
                                  )
                              ]
                              )
-    rowid = models.ForeignKey(Row)
+    row = models.ForeignKey(Row, related_name='racks')
     totalunits = models.IntegerField(default=48)
 
-
     class Meta:
-        ordering = ('rowid',)
+        ordering = ('row',)
 
     def __unicode__(self):
-        return '%s' % self.label
+        return '%s%s' % (self.row.label, self.label)
 
+    def get_absolute_url(self):
+        return reverse('racklayout:dc', kwargs={'dcid': self.row.dc_id})
 
 class Asset(BaseModel):
     """
@@ -142,56 +143,40 @@ class Asset(BaseModel):
         network device
         console device
     :param
-        rackid: Forgienkey to Rack
-        label: (str) free form text field
-        rackunit: (int) this is the U location of the device (top u)
-        unitsize: (int) size of asset
-        front: (boolean): determines if the ass is in the front of the rack
-        back: (boolean): determines if the asset is in the back of the rack
-        power: (int) not sure how to calculate this
+        :ASSET_TYPES
+        :hostname
+        :asset_type
     """
-    #todo add support for power calc per cabinet
-    rackid = models.ForeignKey(Rack)
+    ASSET_TYPES = Choices((0, 'server'), (1, 'panel'), (2, 'network'), (3, 'console'))
+
     label = models.CharField(max_length=64)
-    rackunit = models.IntegerField()
-    unitsize = models.IntegerField()
-    front = models.BooleanField(default=False)
-    back = models.BooleanField(default=False)
-    panel = models.BooleanField(default=False)
+    asset_type = models.IntegerField(choices=ASSET_TYPES)
+    rack = models.ForeignKey(Rack, default=None, related_name='assets')
 
     class Meta:
-        ordering = ('rackid',)
+        unique_together = ('label', 'rack')
 
     def __unicode__(self):
         return '%s' % self.label
 
-
-class Port(BaseModel):
+class HalfUnit(BaseModel):
     """
-    class for ports that are on our assets
-    :param
-        assetid: ForgienKey to Asset
-        slot: (int) slot of port
-        module: (int) module of port
-        port: (int) port number
-        front: (boolean) if the port is in the front or the back of the rack
+    class for the units in a rack. A rack unit is split into two parts
+    front and back. This allows to assets that have a half rack depth
+    to support assets in the front and patch panels in the back or
+    vice versa
     """
-    assetid = models.ForeignKey(Asset)
-    slot = models.IntegerField(null=True, blank=True)
-    module = models.IntegerField(null=True, blank=True)
-    port = models.IntegerField(null=True, blank=True)
-    front = models.BooleanField(default=False)
+    PARTS = Choices((0, 'front'), (1, 'back'))
+    asset = models.ForeignKey(Asset, default=None, related_name='units')
+    location = models.IntegerField()
+    # HalfUnit.PARTS.front
+    part = models.IntegerField(choices=PARTS)
 
     class Meta:
-        ordering = ('port',)
+        ordering = ('-location', 'asset')
+        unique_together = ('asset', 'location', 'part')
+
+    def __unicode__(self):
+        return '%s, %s, %s' % (self.asset, self.location, self.PARTS[self.part])
 
 
-class CrossConnects(BaseModel):
-    """
-    class for cross connects
-    """
-    aside = models.ForeignKey(Port, related_name='aside')
-    zside = models.ForeignKey(Port, related_name='zside')
-
-    class Meta:
-        ordering = ('aside',)

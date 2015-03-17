@@ -2,22 +2,57 @@
 {% load staticfiles %}
 {% block title %}Dacenter{% endblock %}
 {% block content %}
+<script>
+function toggler() {
+    $("#hiddenAddRow").toggle();
+    $("#hiddenAddRack").toggle();
+}
+$(document).ready(function(){
+    $("#hiddenAddRow").hide();
+    $.get("{% url 'racklayout:createrow' datacenter.id %}", function(data){
+        $("#hiddenAddRow").append(data);
+    });
+
+    $("#hiddenAddRack").hide();
+    $.get("{% url 'racklayout:createrack' datacenter.id %}", function(data){
+        $("#hiddenAddRack").append(data);
+    });
+
+});
+</script>
 
     <div class="col-md-12">
         <div class="panel panel-primary">
             <div class="panel-heading clearfix">
-                <H3 class="panel-title pull-left">{{ datacenter.label }}</H3>
+                <H3 class="panel-title pull-left">{{ datacenter }}</H3>
+                <div class="col-sm-3 col-md-3 pull-right">
+                   <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="query" id="srch-term">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="searchsubmit"><i class="glyphicon glyphicon-search"></i></button>
+                            <button class="btn btn-default" id="addrow" onclick="toggler();"><i class="glyphicon glyphicon-plus-sign" style="color: #0099FF"></i></button>
+                        </div>
+                   </div>
+                 </div>
+                </div>
             </div>
 
+        <div id='hiddenAddRow'>
+        <!-- place holder for /create/row -->
+        </div>
+        <div id='hiddenAddRack'>
+        <!-- place holder for /create/row -->
         </div>
         {% if object_list %}
-        <div class="row">
-        {% for rack in object_list %}
+        {% for row in object_list %}
+            <div class="row">
+            {% for rack in row.racks.all %}
             <div class="col-md-1 text-left" style="padding: 0.1em; margin: 0.1em; border: 1px solid grey">
-                <H1>{{ rack.rowid.label }}{{ rack.label }}</H1>
+                <H1><a href="{% url 'racklayout:rack' rack.id %}"> {{ rack }}</a></H1>
+            </div>
+            {% endfor %}
             </div>
         {% endfor %}
-         </div>
     {% else %}
         <H1> empty query set</H1>
     {% endif %}

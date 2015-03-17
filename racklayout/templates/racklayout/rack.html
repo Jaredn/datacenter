@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block title %}Dacenter{% endblock %}
+{% block content %}
+
+<div class="col-md-12">
+    <div class="panel panel-primary">
+        <div class="panel-heading clearfix">
+            <h3 class="panel-title pull-left">Rack:
+                {% if rack %}
+                    {{ rack }}
+                {% else %}
+                    Errror: Rack not found
+                {% endif %}
+            </h3>
+        </div>
+        <div class="panel-body">
+           {% for row in listunits %}
+            {% for unit, item in row.iteritems %}
+                <div class ='row' >
+                <div class="col-md-1" style="rowcount: 2;padding: 0.0em; border: 1px solid grey">{{ unit }}</div>
+                <div class="col-md-3" style="padding: 0.0em; border: 1px solid grey">{{ item.label }}</div>
+                </div>
+
+            {% endfor %}
+           {%  endfor %}
+        </div>
+
+</div>
+
+<pre>{{ rackunits }}</pre>
+<pre>{{ listunits }}</pre>
+
+{% endblock %}
