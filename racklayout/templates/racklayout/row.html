@@ -35,7 +35,6 @@ $(document).ready(function(){
                    </div>
                  </div>
                 </div>
-            </div>
 
         <div id='hiddenAddRow'>
         <!-- place holder for /create/row -->
@@ -43,11 +42,12 @@ $(document).ready(function(){
         <div id='hiddenAddRack'>
         <!-- place holder for /create/row -->
         </div>
+        <div class="panel-body">
         {% if object_list %}
         {% for row in object_list %}
             <div class="row">
             {% for rack in row.racks.all %}
-            <div class="col-md-1 text-left" style="padding: 0.1em; margin: 0.1em; border: 1px solid grey">
+            <div class="col-md-1 text-left">
                 <H1><a href="{% url 'racklayout:rack' rack.id %}"> {{ rack }}</a></H1>
             </div>
             {% endfor %}
@@ -56,5 +56,7 @@ $(document).ready(function(){
     {% else %}
         <H1> empty query set</H1>
     {% endif %}
+    </div>
+    </div>
     </div>
 {% endblock %}
