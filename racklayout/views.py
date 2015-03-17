@@ -70,6 +70,7 @@ class RackView(DetailView):
             key = asset.units.first().location
             result[key]['label'] = asset
             result[key]['type'] = asset.get_asset_type_display()
+            result[key]['size'] = asset.units.all().count()
             for unit in asset.units.all()[1:]:
                 result[unit.location]['type'] = 'filled'
                 result[unit.location]['label'] = 'filled'

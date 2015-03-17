@@ -17,11 +17,10 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
-                ('hostname', models.CharField(max_length=64)),
-                ('asset_type', models.IntegerField(choices=[(0, b'server'), (1, b'panel'), (3, b'network'), (4, b'console')])),
+                ('label', models.CharField(max_length=64)),
+                ('asset_type', models.IntegerField(choices=[(0, b'server'), (1, b'panel'), (2, b'network'), (3, b'console')])),
             ],
             options={
-                'abstract': False,
             },
             bases=(models.Model,),
         ),
@@ -46,10 +45,10 @@ class Migration(migrations.Migration):
                 ('modified', models.DateTimeField(auto_now=True)),
                 ('location', models.IntegerField()),
                 ('part', models.IntegerField(choices=[(0, b'front'), (1, b'back')])),
-                ('asset', models.ForeignKey(to='racklayout.Asset')),
+                ('asset', models.ForeignKey(related_name='units', default=None, to='racklayout.Asset')),
             ],
             options={
-                'ordering': ('location', 'rack__label'),
+                'ordering': ('-location', 'asset'),
             },
             bases=(models.Model,),
         ),
@@ -94,21 +93,19 @@ class Migration(migrations.Migration):
             },
             bases=(models.Model,),
         ),
+        migrations.AlterUniqueTogether(
+            name='row',
+            unique_together=set([('dc', 'label')]),
+        ),
         migrations.AddField(
             model_name='rack',
             name='row',
-            field=models.ForeignKey(to='racklayout.Row'),
-            preserve_default=True,
-        ),
-        migrations.AddField(
-            model_name='halfunit',
-            name='rack',
-            field=models.ForeignKey(related_name='units', to='racklayout.Rack'),
+            field=models.ForeignKey(related_name='racks', to='racklayout.Row'),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(
             name='halfunit',
-            unique_together=set([('rack', 'location', 'part')]),
+            unique_together=set([('asset', 'location', 'part')]),
         ),
         migrations.AddField(
             model_name='dc',
@@ -119,5 +116,15 @@ class Migration(migrations.Migration):
         migrations.AlterUniqueTogether(
             name='dc',
             unique_together=set([('number', 'metro')]),
+        ),
+        migrations.AddField(
+            model_name='asset',
+            name='rack',
+            field=models.ForeignKey(related_name='assets', default=None, to='racklayout.Rack'),
+            preserve_default=True,
+        ),
+        migrations.AlterUniqueTogether(
+            name='asset',
+            unique_together=set([('label', 'rack')]),
         ),
     ]
