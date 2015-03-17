@@ -60,8 +60,30 @@ class RackView(DetailView):
         assets =  context['assets']
         totalunits = context['totalunits']
         # create a dict that can used in the template to render the rack
-        listresult = []
+
+
+        context['backunits'] = self._format_rack(assets, totalunits, 1)[::-1]
+        context['frontunits'] = self._format_rack(assets, totalunits, 0)[::-1]
+
+        return context
+
+    def _format_rack(self, assets, totalunits, part):
+        """
+        method to massage the data into something that used by the template to render the rack
+        example output
+        [{48: {'type': '', 'label': 'empty'}}, {47: {'type': '', 'label': 'empty'}},
+        {46: {'size': 2, 'type': u'network', 'label': <Asset: lsw1.lab>}} }]
+
+        template needs to see label is fill, empty or has an asset
+
+        :param assets:
+        :param totalunits:
+        :param part: 0 -> front, 1 -> back
+        :return: list of dicts
+        """
         result = {}
+        listresult = []
+
         for unit in totalunits:
             result.update({unit: {'type': '', 'label': 'empty'}})
 
@@ -72,18 +94,14 @@ class RackView(DetailView):
             result[key]['type'] = asset.get_asset_type_display()
             result[key]['size'] = asset.units.all().count()
             count = 0
-            for unit in asset.units.filter(part=0)[1:]:
+            for unit in asset.units.filter(part=part)[1:]:
                result[unit.location]['type'] = 'filled'
                result[unit.location]['label'] = 'filled'
 
         for each in result:
             listresult.append({each: result[each]})
 
-        context['rackunits'] = result
-        context['listunits'] = listresult[::-1]
-
-        return context
-
+        return listresult
 
 class CreateDc(CreateView):
 

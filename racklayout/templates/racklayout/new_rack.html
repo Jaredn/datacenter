@@ -3,7 +3,7 @@
 {% block title %}Dacenter{% endblock %}
 {% block content %}
 
-<div class="col-md-12">
+<div class="col-md-3">
     <div class="panel panel-primary">
         <div class="panel-heading clearfix">
             <h3 class="panel-title pull-left">Rack:
@@ -12,14 +12,13 @@
                 {% else %}
                     Errror: Rack not found
                 {% endif %}
-            </h3>
+            Front</h3>
         </div>
         <div class="panel-body">
-        <div class="row">
-        <div class="col-md-3">
-            <table class="table table-bordered table-responsive table-condensed racktable">
+
+            <table class="table table-bordered table-responsive table-condensed table-hover racktable">
                 <tbody class="text-center">
-                {% for row in listunits %}
+                {% for row in frontunits %}
                  {% for unit, item in row.iteritems %}
                     {% if item.label != 'filled' and item.label != 'empty' %}
                     <tr>
@@ -41,10 +40,47 @@
                 </tbody>
             </table>
         </div>
+</div>
+</div>
+<div class="col-md-3">
+    <div class="panel panel-primary">
+        <div class="panel-heading clearfix">
+            <h3 class="panel-title pull-left">Rack:
+                {% if rack %}
+                     {{ rack }}
+                {% else %}
+                    Errror: Rack not found
+                {% endif %}
+            Back</h3>
         </div>
-        </div>
+        <div class="panel-body">
 
+            <table class="table table-bordered table-responsive table-condensed table-hover racktable">
+                <tbody class="text-center">
+                {% for row in backunits %}
+                 {% for unit, item in row.iteritems %}
+                    {% if item.label != 'filled' and item.label != 'empty' %}
+                    <tr>
+                        <td >{{ unit }}</td>
+                        <td rowspan="{{ item.size }}">{{ item.label }}</td>
+                    </tr>
+                    {% elif item.label == 'filled' %}
+                        <tr>
+                            <td>{{ unit }}</td>
+                        </tr>
+                    {% elif item.label == 'empty' %}
+                    <tr>
+                        <td>{{ unit }}</td>
+                        <td>{{  item.label }}</td>
+                    </tr>
+                    {% endif %}
+                 {% endfor %}
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
 </div>
-<pre>{{ listunits }}</pre>
 </div>
+<pre>{{ frontunits }}</pre>
+
 {% endblock %}
