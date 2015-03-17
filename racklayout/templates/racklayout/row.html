@@ -47,7 +47,7 @@ $(document).ready(function(){
         {% for row in object_list %}
             <div class="row">
             {% for rack in row.racks.all %}
-            <div class="col-md-1 text-left">
+            <div class="col-md-1 rack text-center">
                 <H1><a href="{% url 'racklayout:rack' rack.id %}"> {{ rack }}</a></H1>
             </div>
             {% endfor %}
