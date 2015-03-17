@@ -3,7 +3,6 @@
 {% block title %}Dacenter{% endblock %}
 {% block content %}
 
-
 <div class="col-md-12">
     <div class="panel panel-primary">
         <div class="panel-heading clearfix">
@@ -16,16 +15,18 @@
             </h3>
         </div>
         <div class="panel-body">
-            <table border="1">
-                <tbody>
+        <div class="row">
+        <div class="col-md-3">
+            <table class="table table-bordered table-responsive table-condensed racktable">
+                <tbody class="text-center">
                 {% for row in listunits %}
                  {% for unit, item in row.iteritems %}
-                    {% if item.label != 'filled' and item.label != 'empty' and item.label != 'last' %}
+                    {% if item.label != 'filled' and item.label != 'empty' %}
                     <tr>
-                        <td>{{ unit }}</td>
-                        <td rowspan="{{ item.size }}" width="200">{{ item.label }}</td>
+                        <td >{{ unit }}</td>
+                        <td rowspan="{{ item.size }}">{{ item.label }}</td>
                     </tr>
-                    {% elif item.label == 'last' or item.label == 'filled' %}
+                    {% elif item.label == 'filled' %}
                         <tr>
                             <td>{{ unit }}</td>
                         </tr>
@@ -39,6 +40,8 @@
                 {% endfor %}
                 </tbody>
             </table>
+        </div>
+        </div>
         </div>
 
 </div>
