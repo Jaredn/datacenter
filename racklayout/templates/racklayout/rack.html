@@ -3,14 +3,10 @@
 {% block title %}Dacenter{% endblock %}
 {% block content %}
 <style>
- .rowspan1
- {
-   height: 10px;
- }
 
  .rowspan2
  {
-   height: 40px;
+   height: 44px;
  }
  .rowspan3
  {
@@ -18,7 +14,7 @@
  }
  .rowspan4
  {
-   height: 30px;
+   height: 40px;
  }
  .rowspan5
  {
@@ -54,11 +50,11 @@
                             </div>
                         </div>
                     {% elif item.label == 'filled' %}
-                        <div class="col-md-1" style="padding: 0.0em; border: 1px solid grey">{{ unit }}</div>
+                        <div class="row" style="padding: 0.0em; border: 1px solid grey">{{ unit }}</div>
                     {% elif item.label == 'empty' %}
                         <div class="row">
                             <div class="col-md-3" style="padding: 0.0em; border: 1px solid grey">{{ item.label }}</div>
-                            <div class="row" style="padding: 0.0em; border: 1px solid grey">{{ unit }}</div>
+                            <div class="col-md-1" style="padding: 0.0em; border: 1px solid grey">{{ unit }}</div>
                         </div>
 
                     {% endif %}
