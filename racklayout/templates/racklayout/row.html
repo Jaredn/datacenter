@@ -1,10 +1,25 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block title %}Dacenter{% endblock %}
+{% block content %}
 
-</body>
-</html>
+    <div class="col-md-12">
+        <div class="panel panel-primary">
+            <div class="panel-heading clearfix">
+                <H3 class="panel-title pull-left">{{ datacenter.label }}</H3>
+            </div>
+
+        </div>
+        {% if object_list %}
+        <div class="row">
+        {% for rack in object_list %}
+            <div class="col-md-1 text-left" style="padding: 0.1em; margin: 0.1em; border: 1px solid grey">
+                <H1>{{ rack.rowid.label }}{{ rack.label }}</H1>
+            </div>
+        {% endfor %}
+         </div>
+    {% else %}
+        <H1> empty query set</H1>
+    {% endif %}
+    </div>
+{% endblock %}

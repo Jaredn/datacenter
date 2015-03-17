@@ -1,10 +1,43 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block title %}DataCenter{% endblock %}
+{% block content %}
 
-</body>
-</html>
+    <div class="col-md-12">
+        <div class="panel panel-primary">
+            <div class="panel-heading clearfix">
+                 <H3 class="panel-title pull-left">Datacenters</H3>
+            </div>
+        </div>
+        <div id="metrotable" class="table-responsive">
+            <table id="metrotable" class="table table-condensed table-hover">
+                <thead>
+                    <tr class="text-left">
+                        <th>Metro</th>
+                        <th>Datacenter</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% if datacenters %}
+                {% for datacenter in datacenters %}
+                    <tr>
+                        <td>{{ datacenter.metroid.label }}</td>
+                        <td><a href="{% url 'racklayout:dc' datacenter.id %}"> {{ datacenter.label }}</a></td>
+                    </tr>
+                {% endfor %}
+                {% else %}
+                    <tr>
+                        <td><h3>there is nothing in the database</h3></td>
+                    </tr>
+                {% endif %}
+                </tbody>
+                {% if error %}
+                    <tr>
+                        <td>{{ error }}</td>
+                    </tr>
+                {% endif %}
+            </table>
+        </div>
+    </div>
+
+{% endblock %}
