@@ -97,8 +97,8 @@ class RackView(DetailView):
                 result[key]['size'] = asset.units.all().count()
 
             for unit in asset.units.filter(part=part)[1:]:
-               result[unit.location]['type'] = 'filled'
-               result[unit.location]['label'] = 'filled'
+                result[unit.location]['type'] = 'filled'
+                result[unit.location]['label'] = 'filled'
 
         for each in result:
             listresult.append({each: result[each]})
