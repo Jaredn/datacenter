@@ -71,9 +71,15 @@ class RackView(DetailView):
             result[key]['label'] = asset
             result[key]['type'] = asset.get_asset_type_display()
             result[key]['size'] = asset.units.all().count()
+            count = 0
             for unit in asset.units.all()[1:]:
-                result[unit.location]['type'] = 'filled'
-                result[unit.location]['label'] = 'filled'
+                count += 1
+                if count == (result[key]['size']-1):
+                        result[unit.location]['type'] = 'last'
+                        result[unit.location]['label'] = 'last'
+                else:
+                    result[unit.location]['type'] = 'filled'
+                    result[unit.location]['label'] = 'filled'
 
         for each in result:
             listresult.append({each: result[each]})

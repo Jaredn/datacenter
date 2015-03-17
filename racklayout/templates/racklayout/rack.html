@@ -35,7 +35,7 @@
         <div class="panel-heading clearfix">
             <h3 class="panel-title pull-left">Rack:
                 {% if rack %}
-                    {{ rack }}
+                     {{ rack }}
                 {% else %}
                     Errror: Rack not found
                 {% endif %}
@@ -44,10 +44,24 @@
         <div class="panel-body">
            {% for row in listunits %}
             {% for unit, item in row.iteritems %}
-                <!--<div class ='row' > -->
-                <div class="col-md-1" style="padding: 0.0em; border: 1px solid grey">{{ unit }}</div>
-                <div class="col-md-3 rowspan{{ item.size }}" style="padding: 0.0em; border: 1px solid grey">{{ item.label }}</div>
-                <!---</div> -->
+                    {% if item.label != 'filled' and item.label != 'empty' and item.label != 'last'%}
+                        <div class="row">
+                            <div class="col-md-3 rowspan{{ item.size }}" style="padding: 0.0em; border: 1px solid grey">{{ item.label }}</div>
+                            <div class="col-md-1">
+                            <div class="row" style="padding: 0.0em; border: 1px solid grey">{{ unit }}</div>
+                    {% elif item.label == 'last'  %}
+                        <div class="row" style="padding: 0.0em; border: 1px solid grey">{{ unit }}</div>
+                            </div>
+                        </div>
+                    {% elif item.label == 'filled' %}
+                        <div class="col-md-1" style="padding: 0.0em; border: 1px solid grey">{{ unit }}</div>
+                    {% elif item.label == 'empty' %}
+                        <div class="row">
+                            <div class="col-md-3" style="padding: 0.0em; border: 1px solid grey">{{ item.label }}</div>
+                            <div class="row" style="padding: 0.0em; border: 1px solid grey">{{ unit }}</div>
+                        </div>
+
+                    {% endif %}
 
             {% endfor %}
            {%  endfor %}
