@@ -43,7 +43,7 @@ class RackView(DetailView):
 
     """
     model = Rack
-    template_name = 'racklayout/rack.html'
+    template_name = 'racklayout/new_rack.html'
     context_object_name = 'rack'
 
     def get_queryset(self):
@@ -72,14 +72,9 @@ class RackView(DetailView):
             result[key]['type'] = asset.get_asset_type_display()
             result[key]['size'] = asset.units.all().count()
             count = 0
-            for unit in asset.units.all()[1:]:
-                count += 1
-                if count == (result[key]['size']-1):
-                        result[unit.location]['type'] = 'last'
-                        result[unit.location]['label'] = 'last'
-                else:
-                    result[unit.location]['type'] = 'filled'
-                    result[unit.location]['label'] = 'filled'
+            for unit in asset.units.filter(part=0)[1:]:
+               result[unit.location]['type'] = 'filled'
+               result[unit.location]['label'] = 'filled'
 
         for each in result:
             listresult.append({each: result[each]})
