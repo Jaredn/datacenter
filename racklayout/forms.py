@@ -6,8 +6,9 @@ from racklayout.models import Asset, HalfUnit
 
 class AssetForm(ModelForm):
     size = forms.IntegerField()
+    rack = forms.IntegerField()
     topunit = forms.ModelChoiceField(queryset=HalfUnit.objects.all())
-
 
     class Meta:
         model = Asset
+        fields = ['label', 'asset_type']
