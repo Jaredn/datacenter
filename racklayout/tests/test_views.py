@@ -67,7 +67,7 @@ class TestIndexView(TestCase):
         self.assertEqual(found.func.func_name, 'CreateDc')
 
     def test_createasset_url(self):
-        found = resolve(reverse('racklayout:createasset', kwargs={'pk':1}))
+        found = resolve(reverse('racklayout:createasset', kwargs={'pk':1, 'location': 48}))
         self.assertEqual(found.url_name, 'createasset')
         self.assertEqual(found.func.func_name, 'CreateAsset')
 
