@@ -1,5 +1,5 @@
 <form class="form-inline" id="createAsset" action="{% url 'racklayout:createasset' rack 1 %}" method="post">
-<legend>Create Rack</legend>
+<legend>Create Asset</legend>
     {% csrf_token %}
     {%  for field in form %}
         {% if field.errors %}
