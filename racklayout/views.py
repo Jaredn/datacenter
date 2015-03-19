@@ -160,3 +160,31 @@ class CreateAsset(CreateView):
         context['rack'] = self.kwargs['pk']
 
         return context
+
+    def get_form(self, form_class):
+        form = super(CreateAsset, self).get_form(form_class)
+        form['topunit'].choices = self._get_empty_rack_units(0)
+
+    def _get_empty_rack_units(self, part):
+
+        rack = get_object_or_404(Rack, pk=self.kwargs['pk'])
+        result = []
+
+        totalunits = range(1, rack.totalunits+1)[::1]
+
+        for unit in totalunits:
+            result.append((unit,unit))
+
+        assets = Asset.objects.filter(rack=rack)
+
+        if not assets:
+            return result
+        else:
+            for asset in assets:
+                index = asset.units.first().location
+                result.remove((index,index))
+
+                for unit in asset.units.filter(part=part)[1:]:
+                    result.remove((unit.location, unit.location))
+
+        return result

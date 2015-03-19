@@ -159,6 +159,9 @@ class Asset(BaseModel):
     def __unicode__(self):
         return '%s' % self.label
 
+    def get_absolute_url(self):
+        return reverse('racklayout:rack', kwargs={'pk': self.rack.rack_id})
+
 class HalfUnit(BaseModel):
     """
     class for the units in a rack. A rack unit is split into two parts
