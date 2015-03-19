@@ -5,6 +5,7 @@ from django.views.generic import ListView, DetailView, CreateView
 from django.views.generic.base import View
 from django.shortcuts import get_object_or_404
 #### app imports
+from racklayout.forms import AssetForm
 from racklayout.models import Dc, Rack, Asset, Row
 
 # Create your views here.
@@ -146,5 +147,16 @@ class CreateRack(CreateView):
     def get_context_data(self, **kwargs):
         context = super(CreateRack, self).get_context_data(**kwargs)
         context['datacenter'] = self.kwargs['pk']
+
+        return context
+
+class CreateAsset(CreateView):
+    model = Asset
+    form_class = AssetForm
+    fields = ['label', 'asset_type']
+
+    def get_context_data(self, **kwargs):
+        context = super(CreateAsset, self).get_context_data(**kwargs)
+        context['rack'] = self.kwargs['pk']
 
         return context

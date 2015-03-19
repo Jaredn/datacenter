@@ -35,4 +35,9 @@ urlpatterns = patterns('',
                           view=views.CreateRack.as_view(),
                           name='createrack'
                       ),
+                      url(
+                          regex=r'^create/asset/(?P<pk>\d+)$',
+                          view=views.CreateAsset.as_view(),
+                          name='createasset'
+                      ),
 )
