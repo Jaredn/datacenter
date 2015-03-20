@@ -17,6 +17,10 @@ class AssetForm(ModelForm):
     #                                                       asset__isnull=True).order_by('-location')
 
 
+    def __init__(self, rack):
+        self.rack = rack
+        self.topunits = forms.ModelChoiceField(queryset=rack)
+        super(AssetForm, self).__init__()
 
     class Meta:
         model = Asset
