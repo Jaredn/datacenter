@@ -165,6 +165,8 @@ class CreateAsset(CreateView):
         form = super(CreateAsset, self).get_form(form_class)
         form['topunit'].choices = self._get_empty_rack_units(0)
 
+        return form
+
     def _get_empty_rack_units(self, part):
 
         rack = get_object_or_404(Rack, pk=self.kwargs['pk'])
