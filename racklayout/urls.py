@@ -35,8 +35,9 @@ urlpatterns = patterns('',
                           view=views.CreateRack.as_view(),
                           name='createrack'
                       ),
+                      # ..../racks/<rack_id>/assets <- POST
                       url(
-                          regex=r'^create/asset/(?P<pk>\d+)/(?P<location>\d+)$',
+                          regex=r'^create/asset/(?P<pk>\d+)$',
                           view=views.CreateAsset.as_view(),
                           name='createasset'
                       ),

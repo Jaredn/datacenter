@@ -6,7 +6,7 @@ from django.views.generic.base import View
 from django.shortcuts import get_object_or_404
 #### app imports
 from racklayout.forms import AssetForm
-from racklayout.models import Dc, Rack, Asset, Row
+from racklayout.models import Dc, Rack, Asset, Row, HalfUnit
 
 # Create your views here.
 
@@ -62,7 +62,8 @@ class RackView(DetailView):
         totalunits = context['totalunits']
         # create a dict that can used in the template to render the rack
 
-
+        # Query the HalfUnits instead of the Assets: HalfUnit.objects.filter(rack=self.rack).order_by('-label')
+        # and then in the template skip emitting a <td> if the asset.id is the same as in the row above
         context['backunits'] = self._format_rack(assets, totalunits, 1)[::-1]
         context['frontunits'] = self._format_rack(assets, totalunits, 0)[::-1]
 
@@ -163,7 +164,8 @@ class CreateAsset(CreateView):
 
     def get_form(self, form_class):
         form = super(CreateAsset, self).get_form(form_class)
-        form['topunit'].choices = self._get_empty_rack_units(0)
+        # form['topunit'].choices = self._get_empty_rack_units(0)
+        form['topunit'].choices = HalfUnit.objects.filter(rack=self.kwargs['pk'], asset__isnull=True).order_by('-location')
 
         return form
 

@@ -8,7 +8,7 @@ __pycache__/
 *.so
 
 #pyCharm stuff
-.idea
+.idea/
 
 # Distribution / packaging
 .Python
@@ -59,3 +59,4 @@ docs/_build/
 target/
 
 
+db.sqlite3

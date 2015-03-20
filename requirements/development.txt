@@ -2,3 +2,6 @@
 
 django-extras
 django-extensions
+coverage
+Werkzeug==0.10.1
+factory-boy
