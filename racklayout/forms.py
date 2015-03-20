@@ -9,7 +9,12 @@ UNITS = (('1','1'),)
 class AssetForm(ModelForm):
     size = forms.IntegerField()
     rack = forms.IntegerField()
-    #topunit = forms.ChoiceField(choices=UNITS, required=True, label='Top Unit')
+
+
+    def __init__(self, rack):
+        self.rack = rack
+        self.topunits = forms.ModelChoiceField(queryset=rack)
+        super(AssetForm, self).__init__()
 
     class Meta:
         model = Asset
