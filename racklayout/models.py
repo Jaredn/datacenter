@@ -108,7 +108,7 @@ class HalfUnit(BaseModel):
     vice versa
     """
     PARTS = Choices((0, 'front'), (1, 'back'))
-    asset = models.ForeignKey('Asset', default=None, related_name='units')
+    asset = models.ForeignKey('Asset', null=True , default=None, related_name='units')
     location = models.IntegerField()
     # HalfUnit.PARTS.front
     part = models.IntegerField(choices=PARTS)
