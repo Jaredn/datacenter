@@ -5,7 +5,7 @@ from django.views.generic import ListView, DetailView, CreateView
 from django.views.generic.base import View
 from django.shortcuts import get_object_or_404
 #### app imports
-from racklayout.forms import AssetForm
+from racklayout.forms import AssetForm, RowForm
 from racklayout.models import Dc, Rack, Asset, Row, HalfUnit
 
 # Create your views here.
@@ -116,6 +116,7 @@ class CreateDc(CreateView):
 
 class CreateRow(CreateView):
     model = Row
+    form_class = RowForm
     fields = ['dc', 'label']
 
     def get_initial(self):

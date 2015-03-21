@@ -2,7 +2,7 @@ __author__ = 'jeff_dambly'
 
 from django.forms import ModelForm
 from django import forms
-from racklayout.models import Asset, HalfUnit
+from racklayout.models import Asset, HalfUnit, Row
 
 UNITS = (('1','1'),)
 
@@ -25,3 +25,13 @@ class AssetForm(ModelForm):
     class Meta:
         model = Asset
         fields = ['label', 'asset_type']
+
+class RowForm(ModelForm):
+    class Meta:
+        model = Row
+        fields = ['dc', 'label']
+
+    def clean_label(self):
+        cleaned_data = self.cleaned_data
+        cleaned_data['label'] = cleaned_data['label'].upper()
+        return cleaned_data['label']
