@@ -150,7 +150,6 @@ class Rack(BaseModel):
         ordering = ('row',)
 
     def save(self, *args, **kwargs):
-
         super(Rack, self).save(*args, **kwargs)
 
         for unit in range(1, self.totalunits+1):
