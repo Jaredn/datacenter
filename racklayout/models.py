@@ -5,7 +5,6 @@ from django.core.validators import RegexValidator
 # non django imports
 from model_utils import Choices
 # Create your models here.
-
 # todo: label should have a regext to accept hostnames of devices and the convention for patch panels
 
 
@@ -148,11 +147,11 @@ class Rack(BaseModel):
     totalunits = models.IntegerField(default=48)
 
     def save(self, *args, **kwargs):
-        for unit in self.totalunits:
+        for unit in range(1, self.totalunits+1):
             HalfUnit.objects.create(location=unit, rack=self, part=HalfUnit.PARTS.front)
             HalfUnit.objects.create(location=unit, rack=self, part=HalfUnit.PARTS.back)
 
-        super.save(*args, **kwargs)
+        super(Rack, self).save(*args, **kwargs)
 
     class Meta:
         ordering = ('row',)
@@ -187,5 +186,6 @@ class Asset(BaseModel):
     def __unicode__(self):
         return '%s' % self.label
 
-    def get_absolute_url(self):
-        return reverse('racklayout:rack', kwargs={'pk': self.units[0].rack_id})
+    # todo this needs to be fixed
+    #def get_absolute_url(self):
+    #    return reverse('racklayout:rack', kwargs={'pk': self.units.all()[0].rack_id})

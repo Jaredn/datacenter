@@ -21,6 +21,7 @@ class Migration(migrations.Migration):
                 ('asset_type', models.IntegerField(choices=[(0, b'server'), (1, b'panel'), (2, b'network'), (3, b'console')])),
             ],
             options={
+                'abstract': False,
             },
             bases=(models.Model,),
         ),
@@ -103,9 +104,15 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(related_name='racks', to='racklayout.Row'),
             preserve_default=True,
         ),
+        migrations.AddField(
+            model_name='halfunit',
+            name='rack',
+            field=models.ForeignKey(related_name='units', default=None, to='racklayout.Rack'),
+            preserve_default=True,
+        ),
         migrations.AlterUniqueTogether(
             name='halfunit',
-            unique_together=set([('asset', 'location', 'part')]),
+            unique_together=set([('rack', 'location', 'part')]),
         ),
         migrations.AddField(
             model_name='dc',
@@ -116,15 +123,5 @@ class Migration(migrations.Migration):
         migrations.AlterUniqueTogether(
             name='dc',
             unique_together=set([('number', 'metro')]),
-        ),
-        migrations.AddField(
-            model_name='asset',
-            name='rack',
-            field=models.ForeignKey(related_name='assets', default=None, to='racklayout.Rack'),
-            preserve_default=True,
-        ),
-        migrations.AlterUniqueTogether(
-            name='asset',
-            unique_together=set([('label', 'rack')]),
         ),
     ]
