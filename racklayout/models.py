@@ -107,7 +107,7 @@ class HalfUnit(BaseModel):
     to support assets in the front and patch panels in the back or
     vice versa
     """
-    PARTS = Choices((0, 'front'), (1, 'back'))
+    PARTS = Choices((0,'front'), (1,'back'))
     asset = models.ForeignKey('Asset', null=True , default=None, related_name='units')
     location = models.IntegerField()
     # HalfUnit.PARTS.front
@@ -146,15 +146,17 @@ class Rack(BaseModel):
     row = models.ForeignKey(Row, related_name='racks')
     totalunits = models.IntegerField(default=48)
 
+    class Meta:
+        ordering = ('row',)
+
     def save(self, *args, **kwargs):
-        for unit in range(1, self.totalunits+1):
-            HalfUnit.objects.create(location=unit, rack=self, part=HalfUnit.PARTS.front)
-            HalfUnit.objects.create(location=unit, rack=self, part=HalfUnit.PARTS.back)
 
         super(Rack, self).save(*args, **kwargs)
 
-    class Meta:
-        ordering = ('row',)
+        for unit in range(1, self.totalunits+1):
+            HalfUnit.objects.create(location=unit, rack=self, part=0)
+            HalfUnit.objects.create(location=unit, rack=self, part=1)
+
 
     def __unicode__(self):
         return '%s%s' % (self.row.label, self.label)
