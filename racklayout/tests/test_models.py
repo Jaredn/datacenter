@@ -146,8 +146,7 @@ class TestAllTheModels(TestCase):
         rack.save()
 
         asset = Asset.objects.create(label='trr1-10f.lab.net',
-                     asset_type=2,
-                     rack=rack)
+                     asset_type=2)
 
         self.assertTrue(isinstance(asset, Asset))
         self.assertEqual(asset.__unicode__(), 'trr1-10f.lab.net')
@@ -158,7 +157,7 @@ class TestAllTheModels(TestCase):
         dc = Dc.objects.create(number=1, metro=metro)
         row = Row.objects.create(label=1, dc=dc)
         rack = Rack.objects.create(label='A', row=row)
-        asset = Asset.objects.create(label='trr1-10f.lab.net', asset_type=2, rack=rack)
+        asset = Asset.objects.create(label='trr1-10f.lab.net', asset_type=2)
         front_unit = HalfUnit.objects.create(part=0, asset=asset, location=48)
 
         self.assertTrue(isinstance(front_unit, HalfUnit))
